@@ -19,7 +19,7 @@ public class Servidor {
     
     String numerosServidor;
 
-    int numeroAleatorio = 123;
+    char[] numeroAleatorio;
 
     public Servidor() {
         numeroAleatorio();
@@ -28,20 +28,26 @@ public class Servidor {
     public Servidor(String unaCadena) {
         cadenaDigitada = unaCadena;
         cadena = cadenaDigitada.toCharArray();        
-        numerosServidor = String.valueOf(numeroAleatorio);
+        numerosServidor = new String(numeroAleatorio);
     }
     
     public void cambiarNumero(String unaCadena){
         cadenaDigitada = unaCadena;
         cadena = cadenaDigitada.toCharArray();
-        numerosServidor = String.valueOf(numeroAleatorio);
+        numerosServidor = new String(numeroAleatorio);
+    }
+    
+    public String darNumeroServidor()
+    {
+        numerosServidor = new String(numeroAleatorio);
+        return numerosServidor;
     }
     
     public String darCadenaDigitada(){
         return cadenaDigitada;
     }
     
-    public int darNumeroAleatorio(){
+    public char[] darNumeroAleatorio(){
         return numeroAleatorio;
     }
     
@@ -73,7 +79,12 @@ public class Servidor {
     
     public final void numeroAleatorio(){
         Random random = new Random();
-        numeroAleatorio = random.nextInt(999)+100;
+        numeroAleatorio = new char[4];
+        for (int i = 0; i < numeroAleatorio.length; i++) {
+            String numero = String.valueOf(random.nextInt(9));
+            numeroAleatorio[i] =  numero.charAt(0);    
+        }
+        
     }
 
 }

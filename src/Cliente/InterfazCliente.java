@@ -135,6 +135,16 @@ public class InterfazCliente extends JFrame implements ActionListener {
         i.pack();
         i.setResizable(false);
         i.setVisible(true);
+        
+//        Servidor servidor =new Servidor();
+//        servidor.numeroAleatorio();
+//        System.out.println(""+servidor.darNumeroServidor());
+//        char[] cad  = servidor.darNumeroAleatorio();
+//        for (int i = 0; i < cad.length; i++) {
+//            System.out.println("mm "+cad[i]);
+//        }
+        
+//        System.out.println(" "+servidor.darNumeroAleatorio());
     }
 
     @Override
@@ -143,7 +153,7 @@ public class InterfazCliente extends JFrame implements ActionListener {
             try {
                 int numero = Integer.valueOf(txtNumero.getText());
                 servidor.cambiarNumero("" + numero);
-                if (servidor.darFijas() == 3) {
+                if (servidor.darFijas() == 4) {
                     JOptionPane.showMessageDialog(this, "Ganaste!!", "Ganador", JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     JOptionPane.showMessageDialog(this, "Fijas: " + servidor.darFijas() + "\nPicas: " + servidor.darPicas(), "Fijas y picas", JOptionPane.INFORMATION_MESSAGE);
