@@ -8,10 +8,10 @@ package Cliente;
 import Servidor.Servidor;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,9 +20,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -31,6 +34,12 @@ import javax.swing.UnsupportedLookAndFeelException;
 public class InterfazCliente extends JFrame implements ActionListener {
 
     private Servidor servidor;
+    
+    private JTable tablaDatos;
+    
+    private JScrollPane scrollPaneTabla;
+    
+    private DefaultTableModel tablaModelo;
 
     private JLabel lblExplicacion;
 
@@ -113,17 +122,32 @@ public class InterfazCliente extends JFrame implements ActionListener {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.NONE;
         panelDatos.add(btnCancelar, gbc);
-
+        
+        JPanel panelTabla = new JPanel(new GridLayout(1, 0));
+        tablaDatos = new JTable(new DefaultTableModel(null, new Object[]{"Fijas","Picas","Numero digitado"}));
+        tablaModelo = (DefaultTableModel)tablaDatos.getModel();
+        scrollPaneTabla = new JScrollPane(tablaDatos);
+        panelTabla.add(scrollPaneTabla);
+        
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.BOTH;
         add(panelInformacion, gbc);
-
+        
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 1;
+        gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.BOTH;
-        add(panelDatos, gbc);
+        add(panelDatos,gbc);
+        
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.fill = GridBagConstraints.BOTH;
+        add(panelTabla,gbc);
     }
 
     /**
@@ -133,7 +157,7 @@ public class InterfazCliente extends JFrame implements ActionListener {
 
         InterfazCliente i = new InterfazCliente();
         i.pack();
-        i.setResizable(false);
+//        i.setResizable(false);
         i.setVisible(true);
         
 //        Servidor servidor =new Servidor();
@@ -143,8 +167,8 @@ public class InterfazCliente extends JFrame implements ActionListener {
 //        for (int i = 0; i < cad.length; i++) {
 //            System.out.println("mm "+cad[i]);
 //        }
-        
-//        System.out.println(" "+servidor.darNumeroAleatorio());
+//        
+//        System.out.println(" "+servidor.darNumeroServidor());
     }
 
     @Override
@@ -157,7 +181,8 @@ public class InterfazCliente extends JFrame implements ActionListener {
                     JOptionPane.showMessageDialog(this, "Ganaste!!", "Ganador", JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     JOptionPane.showMessageDialog(this, "Fijas: " + servidor.darFijas() + "\nPicas: " + servidor.darPicas(), "Fijas y picas", JOptionPane.INFORMATION_MESSAGE);
-                    System.out.println(""+servidor.darNumeroAleatorio());
+                    System.out.println(""+servidor.darNumeroServidor());
+                    llenarTabla();
                 }
             } catch (NumberFormatException error) {
                 JOptionPane.showMessageDialog(this, "Digite un número válido", "Error", JOptionPane.ERROR_MESSAGE);
@@ -167,5 +192,8 @@ public class InterfazCliente extends JFrame implements ActionListener {
             dispose();
         }
     }
-
+    
+    public void llenarTabla(){        
+        tablaModelo.addRow(new Object[]{servidor.darFijas(),servidor.darPicas(),servidor.darCadenaDigitada()});
+    }
 }
