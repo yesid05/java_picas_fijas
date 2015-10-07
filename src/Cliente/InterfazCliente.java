@@ -8,6 +8,7 @@ package Cliente;
 import Servidor.Servidor;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -15,6 +16,10 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -31,14 +36,14 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author yesid caicedo
  */
-public class InterfazCliente extends JFrame implements ActionListener {
+public class InterfazCliente extends JFrame implements ActionListener, KeyListener {
 
     private Servidor servidor;
-    
+
     private JTable tablaDatos;
-    
+
     private JScrollPane scrollPaneTabla;
-    
+
     private DefaultTableModel tablaModelo;
 
     private JLabel lblExplicacion;
@@ -53,9 +58,8 @@ public class InterfazCliente extends JFrame implements ActionListener {
 
     public InterfazCliente() {
         servidor = new Servidor();
-        setLayout(new GridBagLayout());
+        setLayout(new BorderLayout());
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
         try {
             // Set System L&F
             UIManager.setLookAndFeel(
@@ -89,9 +93,11 @@ public class InterfazCliente extends JFrame implements ActionListener {
 
         lblNumero = new JLabel("Digite un número:");
         txtNumero = new JTextField(15);
+        txtNumero.addKeyListener(this);
 
         btnAceptar = new JButton("Aceptar");
         btnAceptar.addActionListener(this);
+        btnAceptar.addKeyListener(this);
         btnCancelar = new JButton("Cancelar");
         btnCancelar.addActionListener(this);
 
@@ -122,32 +128,23 @@ public class InterfazCliente extends JFrame implements ActionListener {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.NONE;
         panelDatos.add(btnCancelar, gbc);
-        
-        JPanel panelTabla = new JPanel(new GridLayout(1, 0));
-        tablaDatos = new JTable(new DefaultTableModel(null, new Object[]{"Fijas","Picas","Numero digitado"}));
-        tablaModelo = (DefaultTableModel)tablaDatos.getModel();
+
+        JPanel panelTabla = new JPanel(new GridBagLayout());
+        tablaDatos = new JTable(new DefaultTableModel(null, new Object[]{"Fijas", "Picas", "Número digitado"}));
+        tablaModelo = (DefaultTableModel) tablaDatos.getModel();
         scrollPaneTabla = new JScrollPane(tablaDatos);
-        panelTabla.add(scrollPaneTabla);
-        
+        scrollPaneTabla.setPreferredSize(new Dimension(400, 200));
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.weightx = 10;
+        gbc.weighty = 10;
         gbc.fill = GridBagConstraints.BOTH;
-        add(panelInformacion, gbc);
-        
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.BOTH;
-        add(panelDatos,gbc);
-        
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.fill = GridBagConstraints.BOTH;
-        add(panelTabla,gbc);
+        panelTabla.add(scrollPaneTabla, gbc);
+
+        add(panelInformacion, BorderLayout.NORTH);
+        add(panelDatos, BorderLayout.CENTER);
+        add(panelTabla, BorderLayout.SOUTH);
     }
 
     /**
@@ -155,45 +152,66 @@ public class InterfazCliente extends JFrame implements ActionListener {
      */
     public static void main(String[] args) {
 
-        InterfazCliente i = new InterfazCliente();
-        i.pack();
-//        i.setResizable(false);
-        i.setVisible(true);
-        
-//        Servidor servidor =new Servidor();
-//        servidor.numeroAleatorio();
-//        System.out.println(""+servidor.darNumeroServidor());
-//        char[] cad  = servidor.darNumeroAleatorio();
-//        for (int i = 0; i < cad.length; i++) {
-//            System.out.println("mm "+cad[i]);
-//        }
-//        
-//        System.out.println(" "+servidor.darNumeroServidor());
+        InterfazCliente interfaz = new InterfazCliente();
+        interfaz.pack();
+        interfaz.setResizable(false);
+        interfaz.setLocationRelativeTo(null);
+        interfaz.setVisible(true);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnAceptar) {
-            try {
-                int numero = Integer.valueOf(txtNumero.getText());
-                servidor.cambiarNumero("" + numero);
-                if (servidor.darFijas() == 4) {
-                    JOptionPane.showMessageDialog(this, "Ganaste!!", "Ganador", JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Fijas: " + servidor.darFijas() + "\nPicas: " + servidor.darPicas(), "Fijas y picas", JOptionPane.INFORMATION_MESSAGE);
-                    System.out.println(""+servidor.darNumeroServidor());
-                    llenarTabla();
-                }
-            } catch (NumberFormatException error) {
-                JOptionPane.showMessageDialog(this, "Digite un número válido", "Error", JOptionPane.ERROR_MESSAGE);
-            }
+            jugar();
         }
-        if (e.getSource() == btnCancelar) {
+        if (e.getSource()
+                == btnCancelar) {
             dispose();
         }
     }
-    
-    public void llenarTabla(){        
-        tablaModelo.addRow(new Object[]{servidor.darFijas(),servidor.darPicas(),servidor.darCadenaDigitada()});
+
+    public void llenarTabla() {
+        tablaModelo.addRow(new Object[]{servidor.darFijas(), servidor.darPicas(), servidor.darCadenaDigitada()});
     }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        if (e.getSource() == txtNumero) {
+            if (((e.getKeyChar() < '1') || (e.getKeyChar() > '9')) && (e.getKeyChar() != '\b' /*corresponde a BACK_SPACE*/)) {
+                e.consume();
+            }
+        }
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+            jugar();
+        }
+        if (e.getSource() == txtNumero) {
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        if (e.getSource() == txtNumero) {
+        }
+    }
+
+    public void jugar() {
+        try {
+            int numero = Integer.valueOf(txtNumero.getText());
+            servidor.cambiarNumero("" + numero);
+            if (servidor.darFijas() == 4) {
+                JOptionPane.showMessageDialog(this, "Ganaste!!", "Ganador", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Fijas: " + servidor.darFijas() + "\nPicas: " + servidor.darPicas(), "Fijas y picas", JOptionPane.INFORMATION_MESSAGE);
+                System.out.println("" + servidor.darNumeroServidor());
+                llenarTabla();
+            }
+        } catch (NumberFormatException error) {
+            JOptionPane.showMessageDialog(this, "Digite un número válido", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
 }
