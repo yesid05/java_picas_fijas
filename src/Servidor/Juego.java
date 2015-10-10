@@ -5,13 +5,14 @@
  */
 package Servidor;
 
+import java.io.Serializable;
 import java.util.Random;
 
 /**
  *
  * @author yesid caicedo
  */
-public class Servidor {
+public class Juego implements Serializable{
 
     char[] cadena;
 
@@ -21,12 +22,12 @@ public class Servidor {
 
     char[] numeroAleatorio;
 
-    public Servidor() {
+    public Juego() {
         numeroAleatorio();
         numerosServidor = new String(numeroAleatorio);
     }
 
-    public Servidor(String unaCadena) {
+    public Juego(String unaCadena) {
         cadena = unaCadena.toCharArray();
         numerosServidor = new String(numeroAleatorio);
     }

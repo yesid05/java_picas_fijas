@@ -5,7 +5,8 @@
  */
 package Cliente;
 
-import Servidor.Servidor;
+import ClaseRemota.IJuegoRMI;
+import Servidor.Juego;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -17,6 +18,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -35,7 +39,7 @@ import javax.swing.table.DefaultTableModel;
  */
 public class InterfazCliente extends JFrame implements ActionListener, KeyListener {
 
-    private Servidor servidor;
+    private IJuegoRMI juego;
 
     private JTable tablaDatos;
 
@@ -54,7 +58,12 @@ public class InterfazCliente extends JFrame implements ActionListener, KeyListen
     private JButton btnCancelar;
 
     public InterfazCliente() {
-        servidor = new Servidor();
+        try {
+            Registry registry = LocateRegistry.getRegistry(5555);
+            juego = (IJuegoRMI)registry.lookup("Juego");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error en el servidor","Error",JOptionPane.ERROR_MESSAGE);
+        }
         setLayout(new BorderLayout());
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         try {
@@ -167,8 +176,8 @@ public class InterfazCliente extends JFrame implements ActionListener, KeyListen
         }
     }
 
-    public void llenarTabla() {
-        tablaModelo.addRow(new Object[]{servidor.darFijas(), servidor.darPicas(), servidor.darCadenaDigitada()});
+    public void llenarTabla() throws RemoteException {
+        tablaModelo.addRow(new Object[]{juego.darFijas(), juego.darPicas(), juego.darNumeroDigitado()});
     }
 
     @Override
@@ -198,16 +207,18 @@ public class InterfazCliente extends JFrame implements ActionListener, KeyListen
     public void jugar() {
         try {
             int numero = Integer.valueOf(txtNumero.getText());
-            servidor.cambiarNumero("" + numero);
-            if (servidor.darFijas() == 4) {
+            juego.digitarNumero(""+numero);
+            if (juego.darFijas() == 4) {
                 JOptionPane.showMessageDialog(this, "Ganaste!!", "Ganador", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(this, "Fijas: " + servidor.darFijas() + "\nPicas: " + servidor.darPicas(), "Fijas y picas", JOptionPane.INFORMATION_MESSAGE);
-                System.out.println("" + servidor.darNumeroServidor());
+                JOptionPane.showMessageDialog(this, "Fijas: " + juego.darFijas() + "\nPicas: " + juego.darPicas(), "Fijas y picas", JOptionPane.INFORMATION_MESSAGE);
+//                System.out.println("" + juego.darNumeroServidor());
                 llenarTabla();
             }
         } catch (NumberFormatException error) {
             JOptionPane.showMessageDialog(this, "Digite un número válido", "Error", JOptionPane.ERROR_MESSAGE);
+        }catch (Exception ex){
+            
         }
     }
 
