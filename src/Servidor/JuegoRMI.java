@@ -41,5 +41,4 @@ public class JuegoRMI extends UnicastRemoteObject implements IJuegoRMI{
     public String darNumeroDigitado() throws RemoteException {
         return juego.darCadenaDigitada();
     }
-    
 }

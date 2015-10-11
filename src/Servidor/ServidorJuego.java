@@ -18,7 +18,30 @@ import java.util.logging.Logger;
  *
  * @author yesid caicedo
  */
-public class ServidorJuego {
+public class ServidorJuego extends Thread{
+
+    public ServidorJuego(String mensaje) {
+        super(mensaje);
+    }
+
+    @Override
+    public void run() {
+        try {
+            JuegoRMI juegoRMI = new JuegoRMI();
+            
+            Registry registry = LocateRegistry.createRegistry(5555);
+            
+            registry.bind("Juego", juegoRMI);
+            
+            System.out.println("Servidor en marcha...!");
+            
+        } catch (Exception ex) {
+            Logger.getLogger(ServidorJuego.class.getName()).log(Level.SEVERE, null, ex);
+        } 
+    }
+    
+    
+    
     
     public static void main(String args[]){
         try {
